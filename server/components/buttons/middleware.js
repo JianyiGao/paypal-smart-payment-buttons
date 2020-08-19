@@ -46,7 +46,7 @@ export function getButtonMiddleware({ logger = defaultLogger, content: smartCont
         app: async ({ req, res, params, meta, logBuffer, sdkMeta }) => {
             logger.info(req, EVENT.RENDER);
 
-            const { env, clientID, buttonSessionID, cspNonce, debug, buyerCountry, disableFunding, disableCard, style, userIDToken, amount,
+            const { env, clientID, buttonSessionID, cspNonce, debug, buyerCountry, enableFunding, disableFunding, disableCard, style, userIDToken, amount,
                 merchantID: sdkMerchantID, currency, intent, commit, vault, clientAccessToken, basicFundingEligibility, locale, onShippingChange,
                 clientMetadataID, riskData, pageSessionID } = getParams(params, req, res);
             const { label, period } = style;
@@ -83,7 +83,7 @@ export function getButtonMiddleware({ logger = defaultLogger, content: smartCont
             });
 
             const fundingEligibilityPromise = resolveFundingEligibility(req, gqlBatch, {
-                logger, clientID, merchantID: sdkMerchantID, buttonSessionID, currency, intent, commit, vault,
+                logger, clientID, merchantID: sdkMerchantID, buttonSessionID, currency, intent, commit, vault, enableFunding,
                 disableFunding, disableCard, clientAccessToken, buyerCountry, basicFundingEligibility
             });
 

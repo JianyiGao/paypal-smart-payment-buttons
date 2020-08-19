@@ -60,6 +60,8 @@ export type ButtonXProps = {|
 
     clientAccessToken : ?string,
     buyerCountry : $Values<typeof COUNTRY>,
+    fundingSource : ?$Values<typeof FUNDING>,
+    enableFunding : ?$ReadOnlyArray<?$Values<typeof FUNDING>>,
 
     createOrder : ?XCreateOrder,
     createBillingAgreement : ?XCreateBillingAgreement,
@@ -107,6 +109,8 @@ export type ButtonProps = {|
     commit : boolean,
     currency : $Values<typeof CURRENCY>,
     intent : $Values<typeof INTENT>,
+    standaloneFundingSource : ?$Values<typeof FUNDING>,
+    enableFunding : ?$ReadOnlyArray<?$Values<typeof FUNDING>>,
 
     clientAccessToken : ?string,
 
@@ -174,8 +178,13 @@ export function getProps({ facilitatorAccessToken } : {| facilitatorAccessToken 
         intent,
         merchantID,
         persistRiskData,
-        upgradeLSAT = false
+        upgradeLSAT = false,
+        fundingSource,
+        enableFunding
     } = xprops;
+
+    console.log(`--------in get props: ${ JSON.stringify(window.xprops.fundingSource) }`);
+    console.log(`enableFunding: ${  window.xprops.enableFunding }`);
 
     const onInit = getOnInit({ onInit: xprops.onInit });
     const merchantDomain = (typeof getParentDomain === 'function') ? getParentDomain() : 'unknown';
@@ -214,6 +223,8 @@ export function getProps({ facilitatorAccessToken } : {| facilitatorAccessToken 
     const onApprove = getOnApprove({ onApprove: xprops.onApprove, intent, onError, partnerAttributionID, upgradeLSAT }, { facilitatorAccessToken, createOrder });
     const onCancel = getOnCancel({ onCancel: xprops.onCancel, onError }, { createOrder });
     const onShippingChange = getOnShippingChange({ onShippingChange: xprops.onShippingChange, partnerAttributionID }, { facilitatorAccessToken, createOrder });
+    // const standaloneFundingSource = fundingSource ? enableFunding.some(funding => funding === fundingSource) : false;
+    // console.log(`---standaloneFundingsource: ${ standaloneFundingSource }`);
 
     return {
         env,
@@ -259,7 +270,9 @@ export function getProps({ facilitatorAccessToken } : {| facilitatorAccessToken 
         createSubscription,
         onApprove,
         onCancel,
-        onShippingChange
+        onShippingChange,
+        standaloneFundingSource: fundingSource,
+        enableFunding
     };
 }
 

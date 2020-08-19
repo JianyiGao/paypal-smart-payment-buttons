@@ -19,6 +19,7 @@ function buildFundingEligibilityQuery(basicFundingEligibility : FundingEligibili
         $intent:          'FundingEligibilityIntent',
         $commit:          'Boolean',
         $vault:           'Boolean',
+        $enableFunding:   '[ SupportedPaymentMethodsType ]',
         $disableFunding:  '[ SupportedPaymentMethodsType ]',
         $disableCard:     '[ SupportedCardsType ]',
         $merchantID:      '[ String ]',
@@ -35,6 +36,7 @@ function buildFundingEligibilityQuery(basicFundingEligibility : FundingEligibili
         intent:          '$intent',
         commit:          '$commit',
         vault:           '$vault',
+        enableFunding:   '$enableFunding',
         disableFunding:  '$disableFunding',
         disableCard:     '$disableCard',
         merchantId:      '$merchantID',
@@ -186,6 +188,7 @@ export type FundingEligibilityOptions = {|
     commit : $Values<typeof COMMIT>,
     vault : $Values<typeof VAULT>,
     disableFunding : $ReadOnlyArray<?$Values<typeof FUNDING>>,
+    enableFunding : $ReadOnlyArray<?$Values<typeof FUNDING>>,
     disableCard : $ReadOnlyArray<?$Values<typeof CARD>>,
     merchantID : ?$ReadOnlyArray<string>,
     buttonSessionID : string,
@@ -194,7 +197,7 @@ export type FundingEligibilityOptions = {|
 |};
 
 export async function resolveFundingEligibility(req : ExpressRequest, gqlBatch : GraphQLBatch, { logger, clientID, merchantID, buttonSessionID,
-    currency, intent, commit, vault, disableFunding, disableCard, clientAccessToken, buyerCountry, basicFundingEligibility } : FundingEligibilityOptions) : Promise<FundingEligibilityType> {
+    currency, intent, commit, vault, enableFunding, disableFunding, disableCard, clientAccessToken, buyerCountry, basicFundingEligibility } : FundingEligibilityOptions) : Promise<FundingEligibilityType> {
 
     try {
         const ip = req.ip;
@@ -204,6 +207,7 @@ export async function resolveFundingEligibility(req : ExpressRequest, gqlBatch :
         intent = intent ? intent.toUpperCase() : intent;
         // $FlowFixMe
         disableFunding = disableFunding ? disableFunding.map(source => source.toUpperCase()) : disableFunding;
+        enableFunding = enableFunding ? enableFunding.map(source => source.toUpperCase()) : enableFunding;
         // $FlowFixMe
         disableCard = disableCard ? disableCard.map(source => source.toUpperCase()) : disableCard;
 
@@ -211,7 +215,7 @@ export async function resolveFundingEligibility(req : ExpressRequest, gqlBatch :
             query:     buildFundingEligibilityQuery(basicFundingEligibility),
             variables: {
                 clientID, merchantID, buyerCountry, cookies, ip, currency, intent, commit,
-                vault, disableFunding, disableCard, userAgent, buttonSessionID
+                vault, enableFunding, disableFunding, disableCard, userAgent, buttonSessionID
             },
             accessToken: clientAccessToken
         });
